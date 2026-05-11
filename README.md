@@ -6,13 +6,13 @@ A React-based plant leaf disease detection web application. The project allows u
 
 ## Preview
 
-### Upload Leaf Image
+<img width="1912" height="867" alt="1plant" src="https://github.com/user-attachments/assets/cfe11dfd-755d-4fa3-9811-2e9559114bc9" />
 
-![Plant Disease Detection Upload Screen](docs/screenshots/upload-screen.png)
 
-### Disease Result
 
-![Plant Disease Detection Result Screen](docs/screenshots/result-screen.png)
+<img width="1887" height="862" alt="2plant" src="https://github.com/user-attachments/assets/327668c6-2893-4545-9b00-8091e462562a" />
+
+
 
 ## Overview
 
