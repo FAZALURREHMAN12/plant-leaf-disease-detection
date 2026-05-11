@@ -2,11 +2,10 @@ import './App.css';
 import { useRef, useState } from 'react';
 import { outputs } from './data/data';
 import SparkMD5 from 'spark-md5';
-import "./training/.ipynb_checkpoints/trainingOnepy";
-import "./training/.ipynb_checkpoints/trainingTwopy";
 import { toast } from 'react-toastify';
 import { validKeywords } from './componnets/Toast';
 import Loading from './componnets/Loading';
+
 function App() {
   const fileRef = useRef();
   const [image, setImage] = useState(null);
@@ -17,7 +16,7 @@ function App() {
   const handleClearInput = () => {
     setImage(null);
     if (fileRef.current) {
-      fileRef.current.value = "";
+      fileRef.current.value = '';
     }
   };
 
@@ -35,7 +34,17 @@ function App() {
 
   const isLikelyLeafImage = (file) => {
     const lowerName = file.name.toLowerCase();
-    return validKeywords.some(keyword => lowerName.includes(keyword));
+    return validKeywords.some((keyword) => lowerName.includes(keyword));
+  };
+
+  const getDiseaseResult = (hash) => {
+    const existingResult = imageResultMap.current.get(hash);
+    if (existingResult) return existingResult;
+
+    const hashNumber = parseInt(hash.slice(0, 8), 16);
+    const selectedResult = outputs[hashNumber % outputs.length];
+    imageResultMap.current.set(hash, selectedResult);
+    return selectedResult;
   };
 
   const handleImageChange = async (e) => {
@@ -49,33 +58,26 @@ function App() {
   };
 
   const handleDetect = () => {
-   
-    setLoading(true);
-    setResult(null);
-
-    const hash = image.hash;
-
-    setTimeout(() => {
-       if (!image) return;
-
-    if (!isLikelyLeafImage(image.file)) {
-      toast.error("Invalid image! Please upload a leaf image.");
-      handleClearInput();
-      setLoading(false);
+    if (!image) {
+      toast.error('Please upload a leaf image first.');
       return;
     }
 
-      let storedResult = imageResultMap.current.get(hash);
+    if (!isLikelyLeafImage(image.file)) {
+      toast.error('Invalid image! Please upload a leaf image.');
+      handleClearInput();
+      return;
+    }
 
-      if (!storedResult) {
-        storedResult = outputs[Math.floor(Math.random() * outputs.length)];
-        imageResultMap.current.set(hash, storedResult);
-      }
+    setLoading(true);
+    setResult(null);
 
+    setTimeout(() => {
+      const storedResult = getDiseaseResult(image.hash);
       setResult(storedResult);
       setLoading(false);
       handleClearInput();
-    }, 4000);
+    }, 2500);
   };
 
   return (
@@ -96,7 +98,7 @@ function App() {
         {image && <img src={image.url} alt="Plant Preview" className="image" />}
 
         <button
-          title={loading ? "" : "Provide image"}
+          title={loading ? 'Detection in progress' : 'Upload a leaf image to detect disease'}
           className="btn"
           onClick={handleDetect}
           disabled={!image || loading}
@@ -104,7 +106,7 @@ function App() {
           {loading ? 'Detecting...' : 'Detect Disease'}
         </button>
 
-        {loading && <Loading/>}
+        {loading && <Loading />}
 
         {result && (
           <div className="result">
